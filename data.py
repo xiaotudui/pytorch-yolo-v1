@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 from torchvision.datasets import VOCDetection
 import torchvision.transforms as T
 
+from config import Grid_S, IMAGE_SIZE
 
 
 class YOLODataset(Dataset):
@@ -13,13 +14,13 @@ class YOLODataset(Dataset):
                                     download = True,
                                     transform = T.Compose([
                                         T.ToTensor(),
-                                        T.Resize(448)
+                                        T.Resize((IMAGE_SIZE[0], IMAGE_SIZE[1]))
                                     ]))
 
     def __getitem__(self, index):
         img, target = self.dataset[index]
+        h, w = img.size()
+        grid_count_x = w / Grid_S
+        grid_count_y = h / Grid_S
 
-        grid_size_x = img.size()[2]/7
-        grid_size_y = img.size()[1]/7
-        depth = 5 * 2 + 20
 
