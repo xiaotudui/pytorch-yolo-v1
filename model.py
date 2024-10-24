@@ -1,6 +1,8 @@
 import torch
 from torch import nn
 
+import config
+
 
 class YOLOv1(nn.Module):
     def __init__(self):
@@ -70,7 +72,7 @@ class YOLOv1(nn.Module):
     def forward(self, x):
         batch_size = x.size()[0]
         x = self.model(x)
-        return torch.reshape(x, [batch_size, 7, 7, 30])
+        return torch.reshape(x, [batch_size, config.S, config.S, 5 * config.B + config.C])
 
 
 if __name__ == '__main__':
