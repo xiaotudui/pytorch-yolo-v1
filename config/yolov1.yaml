@@ -1,0 +1,8 @@
+# 与模型相关参数
+S: 7
+B: 2
+num_classes: 20
+input_size: 448
+# 与训练相关参数
+learning_rate: 0.01
+batch_size: 64
