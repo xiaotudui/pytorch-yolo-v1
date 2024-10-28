@@ -38,6 +38,10 @@ class COCOWrapper(Dataset):
         # 将COCO位置信息，转换为YOLOv1需要的数据形式
         label = torch.zeros(config.S, config.S, 5 * config.B + config.C)
         for x, y, w, h, c in xymhc:
-            pass
-        return img
+            grid_x_index = int ((x * config.IMAGE_SIZE[0]) // (config.IMAGE_SIZE[0] / config.S))
+            grid_y_index = int ((x * config.IMAGE_SIZE[1]) // (config.IMAGE_SIZE[1] / config.S))
+            label[grid_y_index, grid_x_index, 0:5] = torch.tensor([x, y, w, h, 1])
+            label[grid_y_index, grid_x_index, 5:10] = torch.tensor([x, y, w, h, 1])
+            label[grid_y_index, grid_x_index, 10 + c] = 1
+        return img, label
 
