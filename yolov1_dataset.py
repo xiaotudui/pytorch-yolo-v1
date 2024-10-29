@@ -4,6 +4,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 import config
 
+
 # 加载YOLO格式的数据
 class YOLOv1Dataset(Dataset):
     def __init__(self, img_folder, label_folder, transform=None):
@@ -35,22 +36,23 @@ class YOLOv1Dataset(Dataset):
         if self.transform:
             img = self.transform(img)
         return img_name, img
-    
+
     def __getitem__(self, index):
         img_name, img = self.get_yolo_img(index)
         cxywh = self.get_yolo_target(img_name)
 
         label = torch.zeros(config.S, config.S, 5 * config.B + config.C)
         for c, x, y, w, h in cxywh:
-            grid_x_index = int ((x * config.IMAGE_SIZE[0]) // (config.IMAGE_SIZE[0] / config.S))
-            grid_y_index = int ((x * config.IMAGE_SIZE[1]) // (config.IMAGE_SIZE[1] / config.S))
+            grid_x_index = int((x * config.IMAGE_SIZE[0]) // (config.IMAGE_SIZE[0] / config.S))
+            grid_y_index = int((x * config.IMAGE_SIZE[1]) // (config.IMAGE_SIZE[1] / config.S))
             label[grid_y_index, grid_x_index, 0:5] = torch.tensor([x, y, w, h, 1])
             label[grid_y_index, grid_x_index, 5:10] = torch.tensor([x, y, w, h, 1])
-            label[grid_y_index, grid_x_index, 10 + c] = 1
+            label[grid_y_index, grid_x_index, 10 + int(c)] = 1
         return img, label
 
 
 if __name__ == '__main__':
-    dataset = YOLOv1Dataset(img_folder="data/VOCdevkit/VOC2007/JPEGImages", label_folder="data/VOCdevkit/VOC2007/YOLOAnnotations")
+    dataset = YOLOv1Dataset(img_folder="data/VOCdevkit/VOC2007/JPEGImages",
+                            label_folder="data/VOCdevkit/VOC2007/YOLOAnnotations")
     data = dataset[1]
     print(data)
