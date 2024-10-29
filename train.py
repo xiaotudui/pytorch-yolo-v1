@@ -1,7 +1,7 @@
 import argparse
 import torch
 
-from coco_wrapper import COCOWrapper
+from coco_wrapper import YOLOv1Dataset
 from model import YOLOv1
 
 parser = argparse.ArgumentParser(description='Pytorch yolo v1 trainer')
@@ -14,5 +14,5 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = YOLOv1().to(device)
 
-    train_dataset = COCOWrapper()
+    train_dataset = YOLOv1Dataset()
     print(model)
