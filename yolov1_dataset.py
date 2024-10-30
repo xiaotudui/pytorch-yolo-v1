@@ -2,6 +2,8 @@ import os
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
+from torchvision.transforms import Compose, ToTensor
+
 import config
 
 
@@ -53,6 +55,7 @@ class YOLOv1Dataset(Dataset):
 
 if __name__ == '__main__':
     dataset = YOLOv1Dataset(img_folder="data/VOCdevkit/VOC2007/JPEGImages",
-                            label_folder="data/VOCdevkit/VOC2007/YOLOAnnotations")
+                            label_folder="data/VOCdevkit/VOC2007/YOLOAnnotations",
+                            transform=Compose([ToTensor()]))
     data = dataset[1]
     print(data)
