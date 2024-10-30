@@ -12,7 +12,11 @@ class YOLOLoss(nn.Module):
     def forward(self, preds, labels):
         batch_size = labels.size(0)
 
-        loss_xy = 0
+        loss_xy = 0.0
+        loss_wh = 0.0
+        loss_obj = 0.0
+        loss_no_obj = 0.0
+        loss_class = 0.0
 
         for i in range(batch_size):
             for row in range(config.S):
@@ -26,11 +30,21 @@ class YOLOLoss(nn.Module):
                         iou2 = calculate_iou(pred_bbox2, label_bbox)
 
                         if iou1 > iou2:
-                            return loss_xy
-
-
-
-
+                            loss_xy += 5 * torch.sum((labels[i, row, col, 0:2] - preds[i, row, col, 0:2]) ** 2)
+                            loss_wh += torch.sum((labels[i, row, col, 2:4].sqrt() - preds[i, row, col, 2:4].sqrt()) ** 2)
+                            # todo: loss obj
+                            loss_obj += (labels[i, row, col, 5] - preds[i, row, col, 5]) ** 2
+                            loss_no_obj += 0.5 * ((0 - preds[i, row, col, 5]) ** 2)
+                        else:
+                            loss_xy += 5 * torch.sum((labels[i, row, col, 5:7] - preds[i, row, col, 5:7]) ** 2)
+                            loss_wh += torch.sum(
+                                (labels[i, row, col, 7:9].sqrt() - preds[i, row, col, 7:9].sqrt()) ** 2)
+                            # todo: loss obj
+                            loss_obj += (labels[i, row, col, 9] - preds[i, row, col, 9]) ** 2
+                            loss_no_obj += 0.5 * ((0 - preds[i, row, col, 9]) ** 2)
+                        loss_class += torch.sum((labels[i, row, col, 10:] - preds[i, row, col, 10:]) ** 2)
+        loss = loss_xy + loss_wh + loss_obj + loss_no_obj + loss_class
+        return loss / batch_size
 
 
 if __name__ == '__main__':
