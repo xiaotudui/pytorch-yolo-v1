@@ -9,9 +9,7 @@ from loss import YOLOLoss
 from model import YOLOv1
 from yolov1_dataset import YOLOv1Dataset
 
-parser = argparse.ArgumentParser(description='Pytorch yolo v1 trainer')
-parser.add_argument("--cfg", "-c", default="config/yolov1.yaml", help="path to config file")
-parser.add_argument("--train", "-t", default="", help="path to train dataset")
+parser = argparse.ArgumentParser(description='Pytorch yolo v1 by tudui')
 args = parser.parse_args()
 
 if __name__ == '__main__':

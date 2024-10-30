@@ -28,7 +28,7 @@ class YOLOv1Dataset(Dataset):
                 if line == "\n":
                     continue
                 object_info = line.strip().split(" ")
-                cxywh.append((float(i) for i in object_info))
+                cxywh.append([float(i) for i in object_info])
         return cxywh
 
     def get_yolo_img(self, index):
@@ -45,11 +45,17 @@ class YOLOv1Dataset(Dataset):
 
         label = torch.zeros(config.S, config.S, 5 * config.B + config.C)
         for c, x, y, w, h in cxywh:
-            grid_x_index = int((x * config.IMAGE_SIZE[0]) // (config.IMAGE_SIZE[0] / config.S))
-            grid_y_index = int((x * config.IMAGE_SIZE[1]) // (config.IMAGE_SIZE[1] / config.S))
-            label[grid_y_index, grid_x_index, 0:5] = torch.tensor([x, y, w, h, 1])
-            label[grid_y_index, grid_x_index, 5:10] = torch.tensor([x, y, w, h, 1])
-            label[grid_y_index, grid_x_index, 10 + int(c)] = 1
+            grid_x = int(x * config.S)
+            grid_y = int(y * config.S)
+
+            # 修改：计算相对于网格的坐标
+            x_cell = x * config.S - grid_x  # 相对于网格的x坐标
+            y_cell = y * config.S - grid_y  # 相对于网格的y坐标
+
+            # 将预测值填入对应位置
+            label[grid_y, grid_x, 0:5] = torch.tensor([x_cell, y_cell, w, h, 1])
+            label[grid_y, grid_x, 5:10] = torch.tensor([x_cell, y_cell, w, h, 1])
+            label[grid_y, grid_x, 10 + int(c)] = 1
         return img, label
 
 
