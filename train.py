@@ -12,6 +12,9 @@ from yolov1_dataset import YOLOv1Dataset
 parser = argparse.ArgumentParser(description='Pytorch yolo v1 by tudui')
 args = parser.parse_args()
 
+"""
+用于训练
+"""
 if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = YOLOv1().to(device)
