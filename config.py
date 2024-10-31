@@ -2,7 +2,7 @@ S = 7
 B = 2
 C = 20
 IMAGE_SIZE = (448, 448)
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 VOC_CLASSES = (
     "aeroplane",
     "bicycle",

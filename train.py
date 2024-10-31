@@ -30,11 +30,11 @@ if __name__ == '__main__':
                                     ToTensor()
                                 ]))
 
-    train_dataloader = DataLoader(train_dataset, batch_size=config.BATCH_SIZE, shuffle=False)
+    train_dataloader = DataLoader(train_dataset, batch_size=config.BATCH_SIZE, num_workers=8, shuffle=False)
 
-    val_dataloader = DataLoader(val_dataset, batch_size=config.BATCH_SIZE, shuffle=False)
+    val_dataloader = DataLoader(val_dataset, batch_size=config.BATCH_SIZE, num_workers=8, shuffle=False)
 
-    optimizer = SGD(model.parameters(), lr=0.001)
+    optimizer = SGD(model.parameters(), lr=0.01)
 
     for epoch in range(100):
         model.train()
@@ -49,4 +49,6 @@ if __name__ == '__main__':
             loss.backward()
             optimizer.step()
             train_loss += loss.item()
+            print(loss.item())
+        train_loss /= len(train_dataset)
         print("Epoch {} : Loss {}".format(epoch, train_loss))
