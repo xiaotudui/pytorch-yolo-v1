@@ -39,6 +39,7 @@ if __name__ == '__main__':
 
     optimizer = SGD(model.parameters(), lr=0.01)
 
+    best_loss = None
     for epoch in range(100):
         model.train()
         train_loss = 0
@@ -52,6 +53,13 @@ if __name__ == '__main__':
             loss.backward()
             optimizer.step()
             train_loss += loss.item()
-            print(loss.item())
+            # print(loss.item())
         train_loss /= len(train_dataset)
         print("Epoch {} : Loss {}".format(epoch, train_loss))
+
+        if best_loss is None:
+            best_loss = train_loss
+            torch.save(model.state_dict(), "weight/best.pth")
+        if train_loss < best_loss:
+            best_loss = train_loss
+            torch.save(model.state_dict(), "weight/best.pth")
