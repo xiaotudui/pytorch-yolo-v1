@@ -46,31 +46,33 @@ if __name__ == '__main__':
 
     val_dataloader = DataLoader(val_dataset, batch_size=config.BATCH_SIZE, num_workers=8, shuffle=False)
 
-    optimizer = SGD(model.parameters(), lr=0.001)
+    optimizer = SGD(model.parameters(), lr=0.01, momentum=0.9)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
 
     best_loss = None
+    loss_fn = YOLOLoss()
     for epoch in range(100):
         model.train()
         train_loss = 0
-        data_index = 0
         for data in train_dataloader:
             inputs, targets = data
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = model(inputs)
-            loss_fn = YOLOLoss()
             loss = loss_fn(outputs, targets)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
             train_loss += loss.item()
-            print("Epoch {}, [{}/{}] Loss: {}".format(epoch, data_index, len(train_dataset)/config.BATCH_SIZE, loss.item()))
-            data_index += 1
-        train_loss /= len(train_dataset)
+        scheduler.step()
+        train_loss /= len(train_dataloader)
         print("Epoch {} : Loss {}".format(epoch, train_loss))
 
-        if best_loss is None:
+        if best_loss is None or train_loss < best_loss:
             best_loss = train_loss
-            torch.save(model.state_dict(), "weight/finetune.pth")
-        if train_loss < best_loss:
-            best_loss = train_loss
-            torch.save(model.state_dict(), "weight/finetune.pth")
+            checkpoint = {
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': best_loss,
+            }
+            torch.save(checkpoint, "weight/finetune.pth")

@@ -13,8 +13,8 @@ from model import YOLOv1
 """
 
 if __name__ == '__main__':
-    model_path = "weight/best.pth"
-    input_img_path = "img1.jpg"
+    model_path = "weight/finetune-kaggle.pth"
+    input_img_path = "img2.jpg"
     # 加载模型
     model = YOLOv1()
     model.load_state_dict(torch.load(model_path))
